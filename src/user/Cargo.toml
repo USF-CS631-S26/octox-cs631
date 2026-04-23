@@ -1,0 +1,125 @@
+cargo-features = ["per-package-target"]
+
+[package]
+name = "uprogs"
+description = "octox user programs"
+authors = ["Hayato Ohhashi <o8@vmm.dev>"]
+edition = "2021"
+version.workspace = true
+license.workspace = true
+repository.workspace = true
+forced-target = "riscv64gc-unknown-none-elf"
+
+[lib]
+name = "ulib"
+path = "lib/lib.rs"
+
+[[bin]]
+name = "_cat"
+path = "bin/cat.rs"
+
+[[bin]]
+name = "_echo"
+path = "bin/echo.rs"
+
+[[bin]]
+name = "_grep"
+path = "bin/grep.rs"
+
+[[bin]]
+name = "_init"
+path = "bin/init.rs"
+
+[[bin]]
+name = "_initcode"
+path = "bin/initcode.rs"
+
+[[bin]]
+name = "_kill"
+path = "bin/kill.rs"
+
+[[bin]]
+name = "_ln"
+path = "bin/ln.rs"
+
+[[bin]]
+name = "_ls"
+path = "bin/ls.rs"
+
+[[bin]]
+name = "_mkdir"
+path = "bin/mkdir.rs"
+
+[[bin]]
+name = "_rm"
+path = "bin/rm.rs"
+
+[[bin]]
+name = "_sh"
+path = "bin/sh.rs"
+
+[[bin]]
+name = "_wc"
+path = "bin/wc.rs"
+
+[[bin]]
+name = "_head"
+path = "bin/head.rs"
+
+[[bin]]
+name = "_clear"
+path = "bin/clear.rs"
+
+[[bin]]
+name = "_sleep"
+path = "bin/sleep.rs"
+
+[[bin]]
+name = "_touch"
+path = "bin/touch.rs"
+
+[[bin]]
+name = "_jell"
+path = "bin/jell.rs"
+
+[[bin]]
+name = "_ex_args"
+path = "bin/ex_args.rs"
+
+[[bin]]
+name = "_ex_count"
+path = "bin/ex_count.rs"
+
+[[bin]]
+name = "_ex_write"
+path = "bin/ex_write.rs"
+
+[[bin]]
+name = "_ex_fork"
+path = "bin/ex_fork.rs"
+
+[[bin]]
+name = "_ex_exec"
+path = "bin/ex_exec.rs"
+
+[[bin]]
+name = "_ex_redir"
+path = "bin/ex_redir.rs"
+
+[[bin]]
+name = "_ex_redir2"
+path = "bin/ex_redir2.rs"
+
+[[bin]]
+name = "_ex_pipe"
+path = "bin/ex_pipe.rs"
+
+[[bin]]
+name = "_ex_pipe2"
+path = "bin/ex_pipe2.rs"
+
+[dependencies]
+libkernel = { workspace = true }
+
+[build-dependencies]
+libkernel = { workspace = true }
