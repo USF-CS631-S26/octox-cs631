@@ -21,16 +21,13 @@ fn main() {
     match sys::fork().expect("fork") {
         0 => {
             // --- child ---
+
+            // Close STDOUT
+            sys::close(STDOUT_FILENO).expect("close");
+
+            // Now open the file in the first open fd slot
             let fd = sys::open(path, omode::WRONLY | omode::CREATE | omode::TRUNC)
                 .expect("open");
-
-            // Redirect stdout. After this call, fd 1 refers to the file.
-            sys::dup2(fd, STDOUT_FILENO).expect("dup2");
-
-            // fd 3 (or whatever the original was) is now redundant: the
-            // file is still referenced by fd 1. Closing it avoids leaking
-            // a descriptor across exec or just within this process.
-            sys::close(fd).expect("close");
 
             // println! writes to fd 1 — which is now the file.
             println!("hello from child: my stdout is redirected");

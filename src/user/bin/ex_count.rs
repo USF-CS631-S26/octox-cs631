@@ -21,6 +21,7 @@ fn main() {
     let mut count: usize = 0;
     loop {
         let n = sys::read(fd, &mut buf).expect("read");
+        println!("n: {}", n);
         if n == 0 {
             break; // EOF
         }
