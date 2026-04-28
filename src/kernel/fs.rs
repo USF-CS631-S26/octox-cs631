@@ -659,7 +659,7 @@ impl MInode {
 
     // Lock the inode
     // Reads the inode from disk if necessary.
-    pub fn lock(&self) -> SleepLockGuard<IData> {
+    pub fn lock(&self) -> SleepLockGuard<'_, IData> {
         let sb = SB.get().unwrap();
         let mut guard = self.data.lock();
         if !guard.valid {

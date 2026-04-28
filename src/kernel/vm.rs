@@ -668,15 +668,15 @@ impl Kvm {
         self.map(
             KERNBASE.into(),
             KERNBASE.into(),
-            (etext as usize) - KERNBASE,
+            (etext as *const () as usize) - KERNBASE,
             PTE_R | PTE_X,
         );
 
         // map kernel data and the physical RAM we'll make use of.
         self.map(
-            (etext as usize).into(),
-            (etext as usize).into(),
-            PHYSTOP - (etext as usize),
+            (etext as *const () as usize).into(),
+            (etext as *const () as usize).into(),
+            PHYSTOP - (etext as *const () as usize),
             PTE_R | PTE_W,
         );
 
@@ -684,7 +684,7 @@ impl Kvm {
         // the highest virtual address in the kernel.
         self.map(
             TRAMPOLINE.into(),
-            (trampoline as usize).into(),
+            (trampoline as *const () as usize).into(),
             PGSIZE,
             PTE_R | PTE_X,
         );

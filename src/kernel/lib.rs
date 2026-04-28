@@ -4,7 +4,6 @@
     feature(alloc_error_handler)
 )]
 #![cfg_attr(all(target_os = "none", feature = "kernel"), feature(allocator_api))]
-#![feature(negative_impls)]
 #![feature(fn_align)]
 #![feature(variant_count)]
 #![allow(clippy::missing_safety_doc)]

@@ -387,7 +387,7 @@ impl Procs {
                     // Set up new context to start executing at forkret,
                     // which returns to user space.
                     data.context.write_zero();
-                    data.context.ra = fork_ret as usize;
+                    data.context.ra = fork_ret as *const () as usize;
                     data.context.sp = data.kstack.into_usize() + PGSIZE * STACK_PAGE_NUM;
                     return Ok((p, lock));
                 }
@@ -452,7 +452,7 @@ impl Proc {
         // to/from user space, so not PTE_U
         if let Err(err) = uvm.mappages(
             UVAddr::from(TRAMPOLINE),
-            PAddr::from(trampoline as usize),
+            PAddr::from(trampoline as *const () as usize),
             PGSIZE,
             PTE_R | PTE_X,
         ) {

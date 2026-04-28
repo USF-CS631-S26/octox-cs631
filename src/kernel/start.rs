@@ -16,7 +16,7 @@ pub unsafe fn start() -> ! {
     mstatus::set_mpp(mstatus::MPP::Supervisor);
 
     // set MEPC to main, for mret
-    mepc::write(main as usize);
+    mepc::write(main as *const () as usize);
 
     // disable paging for now.
     satp::write(0);
@@ -72,7 +72,7 @@ unsafe fn timerinit() {
     mscratch::write(scratch.as_mut_ptr() as usize);
 
     // set the machine-mode trap handler
-    mtvec::write(timervec as usize, mtvec::TrapMode::Direct);
+    mtvec::write(timervec as *const () as usize, mtvec::TrapMode::Direct);
 
     // enable machine-mode interrupts.
     mstatus::set_mie();

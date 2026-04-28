@@ -32,7 +32,7 @@ pub static TICKS: Mutex<usize> = Mutex::new(0, "time");
 #[no_mangle]
 pub fn inithart() {
     unsafe {
-        stvec::write(kernelvec as usize, stvec::TrapMode::Direct);
+        stvec::write(kernelvec as *const () as usize, stvec::TrapMode::Direct);
     }
 }
 
@@ -51,7 +51,7 @@ pub extern "C" fn usertrap() -> ! {
     // send interrupts and exceptions to kerneltrap().
     // since we're now in the kernel.
     unsafe {
-        stvec::write(kernelvec as usize, stvec::TrapMode::Direct);
+        stvec::write(kernelvec as *const () as usize, stvec::TrapMode::Direct);
     }
 
     let p = Cpus::myproc().unwrap();
@@ -127,7 +127,7 @@ pub unsafe extern "C" fn usertrap_ret() -> ! {
 
     // send syscalls, interrupts, and exceptions to trampoline.rs
     stvec::write(
-        TRAMPOLINE + (uservec as usize - trampoline as usize),
+        TRAMPOLINE + (uservec as *const () as usize - trampoline as *const () as usize),
         stvec::TrapMode::Direct,
     );
 
@@ -138,7 +138,7 @@ pub unsafe extern "C" fn usertrap_ret() -> ! {
     let tf = data.trapframe.as_mut().unwrap();
     tf.kernel_satp = satp::read().bits();
     tf.kernel_sp = data.kstack.into_usize() + PGSIZE * STACK_PAGE_NUM;
-    tf.kernel_trap = usertrap as usize;
+    tf.kernel_trap = usertrap as *const () as usize;
     tf.kernel_hartid = Cpus::cpu_id();
 
     // set up the registers that trampoline.rs's sret will use
@@ -158,7 +158,7 @@ pub unsafe extern "C" fn usertrap_ret() -> ! {
     // switches to the user page table, restores user registers,
     // and switches to user mode with sret.
 
-    let fn_0: usize = TRAMPOLINE + (userret as usize - trampoline as usize);
+    let fn_0: usize = TRAMPOLINE + (userret as *const () as usize - trampoline as *const () as usize);
     let fn_0: extern "C" fn(usize) -> ! = core::mem::transmute(fn_0);
     fn_0(satp)
 }
