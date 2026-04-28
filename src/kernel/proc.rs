@@ -666,9 +666,11 @@ pub fn scheduler() -> ! {
         // Avoid deadlock by ensuring thet devices can interrupt.
         intr_on();
 
+        let mut runnable = false;
         for p in PROCS.pool.iter() {
             let mut inner = p.inner.lock();
             if inner.state == ProcState::RUNNABLE {
+                runnable = true;
                 // Switch to chosen process. It is the process's job
                 // to release its lock and then reacquire it
                 // before jumping back to us.
@@ -681,6 +683,10 @@ pub fn scheduler() -> ! {
                     (*c).proc.take();
                 }
             }
+        }
+
+        if !runnable {
+            wfi();
         }
     }
 }

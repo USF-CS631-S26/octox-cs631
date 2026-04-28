@@ -20,8 +20,8 @@ fn main() {
             // The binaries in octox are installed under /bin with an
             // underscore prefix: the "sleep" command lives at
             // /bin/_sleep. sleep takes one argument: seconds to pause.
-            let argv = ["_sleep", "10"];
-            sys::exec("/bin/_sleep", &argv, None).expect("exec");
+            let argv = ["ls"];
+            sys::exec("/bin/ls", &argv, None).expect("exec");
 
             // Only reachable if exec() failed in a way expect() did not
             // catch (should be unreachable).

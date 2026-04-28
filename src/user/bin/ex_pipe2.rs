@@ -7,7 +7,7 @@
 //
 //     +--------+  write_fd  +--------+  read_fd   +--------+
 //     | child1 | ---------> | pipe   | ---------> | child2 |
-//     | _ls    |            | buffer |            | _wc    |
+//     | ls    |             | buffer |            | wc     |
 //     +--------+            +--------+            +--------+
 //
 // Each child rewires one end of the pipe onto stdin or stdout before
@@ -16,7 +16,7 @@
 //
 // The single most common bug when doing this by hand is forgetting to
 // close the pipe fds in the PARENT. If any process still holds the
-// write end, _wc will wait forever for EOF on stdin.
+// write end, wc will wait forever for EOF on stdin.
 
 use ulib::{
     print, println,
@@ -29,7 +29,7 @@ fn main() {
     sys::pipe(&mut p).expect("pipe");
     let (read_fd, write_fd) = (p[0], p[1]);
 
-    // --- first child: the producer (`_ls`) ---
+    // --- first child: the producer (`ls`) ---
     match sys::fork().expect("fork") {
         0 => {
             // Redirect stdout to the pipe's write end.
@@ -41,14 +41,14 @@ fn main() {
             sys::close(read_fd).expect("close");
             sys::close(write_fd).expect("close");
 
-            let argv = ["_ls"];
-            sys::exec("/bin/_ls", &argv, None).expect("exec");
+            let argv = ["ls"];
+            sys::exec("/bin/ls", &argv, None).expect("exec");
             sys::exit(1);
         }
         _ => {}
     }
 
-    // --- second child: the consumer (`_wc`) ---
+    // --- second child: the consumer (`wc`) ---
     match sys::fork().expect("fork") {
         0 => {
             // Redirect stdin to the pipe's read end.
@@ -58,8 +58,8 @@ fn main() {
             sys::close(read_fd).expect("close");
             sys::close(write_fd).expect("close");
 
-            let argv = ["_wc"];
-            sys::exec("/bin/_wc", &argv, None).expect("exec");
+            let argv = ["wc"];
+            sys::exec("/bin/wc", &argv, None).expect("exec");
             sys::exit(1);
         }
         _ => {}

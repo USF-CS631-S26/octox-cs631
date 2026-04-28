@@ -593,6 +593,14 @@ pub unsafe fn sfence_vma() {
     asm!("sfence.vma zero, zero");
 }
 
+// wait for an interrupt; halts the hart until the next interrupt fires.
+#[inline]
+pub fn wfi() {
+    unsafe {
+        asm!("wfi");
+    }
+}
+
 pub const PGSIZE: usize = 4096; // bytes per page
 pub const PGSHIFT: usize = 12; // bits of offset within a page
 

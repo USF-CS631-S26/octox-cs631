@@ -5,8 +5,6 @@
 // the caller's open fds and sees fd 1 already pointing at the file.
 // Usage: ex_redir2 OUTFILE
 //
-// This is exactly the mechanism a shell uses to implement `cmd > file`:
-//   fork → open file → dup2(fd, 1) → close(fd) → exec(cmd).
 
 use ulib::{env, print, println, stdio::STDOUT_FILENO, sys, sys::fcntl::omode};
 
@@ -17,19 +15,21 @@ fn main() {
     match sys::fork().expect("fork") {
         0 => {
             // --- child ---
+
+            // Close 
+            sys::close(STDOUT_FILENO).expect("close");
+
             // Open the output file and splice it onto stdout.
             let fd = sys::open(path, omode::WRONLY | omode::CREATE | omode::TRUNC)
                 .expect("open");
-            sys::dup2(fd, STDOUT_FILENO).expect("dup2");
-            sys::close(fd).expect("close");
 
-            // Now exec() into /bin/_echo. Because fd 1 is inherited, the
+            // Now exec() into /bin/echo. Because fd 1 is inherited, the
             // echo program's output lands in the file rather than on
             // the terminal. This is why redirection "just works" for
             // arbitrary programs — they never need to know they are
             // being redirected.
-            let argv = ["_echo", "hello", "from", "exec"];
-            sys::exec("/bin/_echo", &argv, None).expect("exec");
+            let argv = ["echo", "hello", "from", "exec"];
+            sys::exec("/bin/echo", &argv, None).expect("exec");
             sys::exit(1); // unreachable unless exec failed
         }
         _ => {

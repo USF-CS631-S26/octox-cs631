@@ -417,13 +417,22 @@ impl SysCalls {
             let p = Cpus::myproc().unwrap().data_mut();
             let src_fd = argraw(0);
             let dst_fd = argraw(1);
+            // Validate src_fd refers to an open file.
+            let mut dup = p
+                .ofile
+                .get(src_fd)
+                .ok_or(FileDescriptorTooLarge)?
+                .as_ref()
+                .ok_or(BadFileDescriptor)?
+                .clone();
             if src_fd != dst_fd {
-                let mut src = p.ofile.get_mut(src_fd).unwrap().take().unwrap();
-                src.clear_cloexec();
+                dup.clear_cloexec();
+                // If dst_fd is already in use, replace() drops the old File,
+                // which decrements its Arc refcount -- equivalent to close().
                 p.ofile
                     .get_mut(dst_fd)
                     .ok_or(FileDescriptorTooLarge)?
-                    .replace(src);
+                    .replace(dup);
             }
             Ok(dst_fd)
         }

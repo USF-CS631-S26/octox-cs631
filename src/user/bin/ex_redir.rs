@@ -5,11 +5,8 @@
 // Usage: ex_redir OUTFILE
 //
 // Technique:
-//   1. open the file for writing → get some fd (say, 3).
-//   2. dup2(fd, 1) — make fd 1 refer to the same file as fd 3.
-//      dup2 first closes whatever fd 1 was pointing at, so this
-//      atomically replaces stdout.
-//   3. close the now-redundant original fd 3.
+//   1. Close STDOUT
+//   2. Open path to occupy the second (index == 1) slot in FD table
 //   4. write to stdout normally; the bytes land in the file.
 
 use ulib::{env, print, println, stdio::STDOUT_FILENO, sys, sys::fcntl::omode};
