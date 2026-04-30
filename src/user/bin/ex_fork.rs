@@ -21,6 +21,8 @@ fn main() {
     match sys::fork().expect("fork") {
         0 => {
             // --- child ---
+            println!("child : started");
+
             x += 1;
             println!(
                 "child : pid={} x={}",
@@ -29,10 +31,12 @@ fn main() {
             );
             // Exit explicitly so the child never falls through to the
             // parent branch below.
-            sys::exit(0);
+            sys::exit(99);
         }
         child_pid => {
             // --- parent ---
+            println!("parent : resumed");
+            
             // wait() blocks until some child exits and writes that
             // child's exit status into the i32 we hand it.
             let mut status: i32 = 0;
